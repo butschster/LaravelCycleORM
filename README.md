@@ -1,7 +1,7 @@
 # Cycle ORM integration for the Laravel Framework
 
 **!!! Important note!!!**
-At this moment this package work only with postgres database driver.
+At this moment this package works only with postgres database driver.
 
 ### Requirements
 - Laravel 7.x
