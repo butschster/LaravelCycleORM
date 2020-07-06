@@ -3,6 +3,8 @@
 namespace Butschster\Cycle\Providers;
 
 use Butschster\Cycle\Commands;
+use Butschster\Cycle\Contracts\EntityManager as EntityManagerContract;
+use Butschster\Cycle\Entity\Manager as EntityManager;
 use Cycle\ORM\Factory;
 use Cycle\ORM\FactoryInterface;
 use Cycle\ORM\ORMInterface;
@@ -24,6 +26,7 @@ use Butschster\Cycle\Migrations\FileRepository;
 use Spiral\Core\FactoryInterface as SpiralContainerInterface;
 use Spiral\Database\Config\DatabaseConfig;
 use Spiral\Database\DatabaseManager;
+use Spiral\Database\DatabaseProviderInterface;
 use Spiral\Migrations\Config\MigrationConfig;
 use Spiral\Migrations\Migrator;
 use Spiral\Tokenizer\ClassLocator;
@@ -59,6 +62,7 @@ class LaravelServiceProvider extends BaseServiceProvider
         $this->registerConsoleCommands();
         $this->registerDatabaseConfig();
         $this->registerDatabaseManager();
+        $this->registerEntityManager();
         $this->registerDatabaseSchema();
         $this->registerRelationMaterializer();
         $this->registerOrm();
@@ -82,8 +86,8 @@ class LaravelServiceProvider extends BaseServiceProvider
     {
         Connection::resolverFor('cycle', function () {
             return new DatabaseConnection(
-                $this->app[ORMInterface::class],
-                config('database.connections.postgres')
+                $this->app['db.connection'],
+                $this->app[ORMInterface::class]
             );
         });
     }
@@ -110,10 +114,19 @@ class LaravelServiceProvider extends BaseServiceProvider
 
     protected function registerDatabaseManager(): void
     {
-        $this->app->singleton(DatabaseManager::class, function () {
+        $this->app->singleton(DatabaseProviderInterface::class, function () {
             return new DatabaseManager(
                 $this->app[DatabaseConfig::class]
             );
+        });
+
+        $this->app->alias(DatabaseProviderInterface::class, DatabaseManager::class);
+    }
+
+    private function registerEntityManager()
+    {
+        $this->app->singleton(EntityManagerContract::class, function () {
+            return $this->app[EntityManager::class];
         });
     }
 
@@ -148,7 +161,7 @@ class LaravelServiceProvider extends BaseServiceProvider
 
         $this->app->singleton(FactoryInterface::class, function () {
             return new Factory(
-                $this->app[DatabaseManager::class],
+                $this->app[DatabaseProviderInterface::class],
                 null,
                 $this->app[SpiralContainerInterface::class]
             );
@@ -192,16 +205,10 @@ class LaravelServiceProvider extends BaseServiceProvider
     {
         $this->app->singleton(Migrator::class, function () {
             $config = $this->app[MigrationConfig::class];
-            $databaseManager = $this->app[DatabaseManager::class];
-
-            $repository = new FileRepository($config);
-
             return new Migrator(
-                ...with($config, fn(MigrationConfig $config) => [
-                    $config,
-                    $databaseManager,
-                    $repository,
-                ])
+                $config,
+                $this->app[DatabaseProviderInterface::class],
+                new FileRepository($config),
             );
         });
     }
@@ -238,7 +245,7 @@ class LaravelServiceProvider extends BaseServiceProvider
             return new SchemaManager(
                 $this->app,
                 $this->app[ClassLocator::class],
-                $this->app[DatabaseManager::class],
+                $this->app[DatabaseProviderInterface::class],
                 $this->app[\Illuminate\Contracts\Cache\Factory::class],
                 $this->app[Migrator::class],
                 $this->app[MigrationConfig::class]

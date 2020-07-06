@@ -4,30 +4,30 @@ namespace Butschster\Cycle\Database;
 
 use Closure;
 use Cycle\ORM\ORMInterface;
-use Exception;
+use Illuminate\Database\ConnectionInterface;
 use Illuminate\Database\DetectsConcurrencyErrors;
-use Illuminate\Database\PostgresConnection;
 use Spiral\Database\Driver\DriverInterface;
+use Spiral\Database\Injection\Fragment;
 use Spiral\Database\Query\BuilderInterface;
 use Throwable;
 
-class Connection extends PostgresConnection
+class Connection implements ConnectionInterface
 {
     use DetectsConcurrencyErrors;
 
-    protected ORMInterface $ORM;
-
-    protected DriverInterface $driver;
+    private ORMInterface $ORM;
+    private DriverInterface $driver;
+    private ConnectionInterface $connection;
 
     /**
+     * @param ConnectionInterface $connection
      * @param ORMInterface $ORM
-     * @param array $config
      */
-    public function __construct(ORMInterface $ORM, array $config)
+    public function __construct(ConnectionInterface $connection, ORMInterface $ORM)
     {
         $this->ORM = $ORM;
         $this->driver = $ORM->getFactory()->database()->getDriver();
-        $this->config = $config;
+        $this->connection = $connection;
     }
 
     /** @inheritDoc */
@@ -99,19 +99,19 @@ class Connection extends PostgresConnection
     /** @inheritDoc */
     public function unprepared($query)
     {
-        throw new Exception('Not implemented');
+        return $this->driver->execute($query);
     }
 
     /** @inheritDoc */
     public function prepareBindings(array $bindings)
     {
-        throw new Exception('Not implemented');
+        return $this->connection->prepareBindings($bindings);
     }
 
     /** @inheritDoc */
     public function pretend(Closure $callback)
     {
-        throw new Exception('Not implemented');
+        return $this->connection->pretend($callback);
     }
 
     /** @inheritDoc */
@@ -127,9 +127,9 @@ class Connection extends PostgresConnection
                 $callbackResult = $callback($this);
             }
 
-            // If we catch an exception we'll rollback this transaction and try again if we
-            // are not out of attempts. If we are out of attempts we will just throw the
-            // exception back out and let the developer handle an uncaught exceptions.
+                // If we catch an exception we'll rollback this transaction and try again if we
+                // are not out of attempts. If we are out of attempts we will just throw the
+                // exception back out and let the developer handle an uncaught exceptions.
             catch (Throwable $e) {
                 $this->handleTransactionException(
                     $e,
@@ -228,5 +228,10 @@ class Connection extends PostgresConnection
         }
 
         throw $e;
+    }
+
+    public function raw($value)
+    {
+        return new Fragment($value);
     }
 }
