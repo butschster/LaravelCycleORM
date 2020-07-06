@@ -1,13 +1,15 @@
 # Cycle ORM integration for the Laravel Framework
+
+![laracycle](https://user-images.githubusercontent.com/773481/86586434-8c675700-bf90-11ea-836c-59b7485f6a8f.png)
+
+[![Latest Stable Version](https://poser.pugx.org/butschster/cycle-orm/v/stable)](https://packagist.org/packages/butschster/cycle-orm) [![Total Downloads](https://poser.pugx.org/butschster/cycle-orm/downloads)](https://packagist.org/packages/butschster/cycle-orm) [![License](https://poser.pugx.org/butschster/cycle-orm/license)](https://packagist.org/packages/butschster/cycle-orm)
+
 Cycle is a PHP DataMapper ORM and Data Modelling engine designed to safely work in classic and daemonized PHP 
 applications (like RoadRunner). The ORM provides flexible configuration options to model datasets, a powerful query
 builder, and supports dynamic mapping schemas. The engine can work with plain PHP objects, support annotation
 declarations, and proxies via extensions.
 
 Full information - https://cycle-orm.dev/docs
-
-
-[![Latest Stable Version](https://poser.pugx.org/butschster/cycle-orm/v/stable)](https://packagist.org/packages/butschster/cycle-orm) [![Total Downloads](https://poser.pugx.org/butschster/cycle-orm/downloads)](https://packagist.org/packages/butschster/cycle-orm) [![License](https://poser.pugx.org/butschster/cycle-orm/license)](https://packagist.org/packages/butschster/cycle-orm)
 
 ### Requirements
 - Laravel 7.x
