@@ -23,7 +23,7 @@ composer require butschster/cycle-orm
 ```
 
 Optionally you can register the EntityManager, Transaction and/or ORM facade:
-```
+```php
 'DatabaseManager' => Butschster\Cycle\Facades\DatabaseManager::class,
 'Transaction' => Butschster\Cycle\Facades\Transaction::class,
 'ORM' => Butschster\Cycle\Facades\ORM::class,
@@ -61,7 +61,7 @@ For more information see https://cycle-orm.dev/docs/basic-connect#configure-data
 #### Getting Database Manager ($dbal)
 `DatabaseManager` registered as a singleton container 
 
-```
+```php
 $dbal = $this->app->get(\Spiral\Database\DatabaseManager::class);
 // Or
 $dbal = $this->app->get(\Spiral\Database\DatabaseProviderInterface::class);
