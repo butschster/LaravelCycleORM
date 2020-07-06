@@ -6,6 +6,9 @@ declarations, and proxies via extensions.
 
 Full information - https://cycle-orm.dev/docs
 
+
+[![Latest Stable Version](https://poser.pugx.org/butschster/cycle-orm/v/stable)](https://packagist.org/packages/butschster/cycle-orm) [![Total Downloads](https://poser.pugx.org/butschster/cycle-orm/downloads)](https://packagist.org/packages/butschster/cycle-orm) [![License](https://poser.pugx.org/butschster/cycle-orm/license)](https://packagist.org/packages/butschster/cycle-orm)
+
 ### Requirements
 - Laravel 7.x
 - PHP 7.4 and above
